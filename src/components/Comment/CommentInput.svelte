@@ -11,7 +11,7 @@
     text = (e.target as HTMLTextAreaElement).value
   }
 
-  const submitHandler = (e: Event) => {
+  const submitHandler = () => {
     console.log(text)
   }
 </script>

@@ -4,6 +4,7 @@
   import Counter from '@components/Counter.svelte'
   import CommentInput from './CommentInput.svelte'
   import replySvg from '/icon-reply.svg'
+  import type { TCommentData } from '@types'
 
   export let data: TCommentData = {
     id: 0,
