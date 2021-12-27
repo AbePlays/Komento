@@ -2,17 +2,25 @@
   import Button from '@components/Button.svelte'
   import Card from '@components/Card.svelte'
   import Counter from '@components/Counter.svelte'
+  import type { Comment, Reply } from '@types'
+  import { timeDifference } from '@utils'
   import CommentInput from './CommentInput.svelte'
   import replySvg from '/icon-reply.svg'
-  import type { TCommentData } from '@types'
 
-  export let data: TCommentData = {
-    id: 0,
-    author: 'amy',
-    text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    likes: 0,
-    date: new Date().toISOString(),
-    photoUrl: 'https://picsum.photos/200/300'
+  export let data: Comment = {
+    id: 1,
+    content:
+      "Impressive! Though it seems the drag feature could be improved. But overall it looks incredible. You've nailed the design and the responsiveness at various breakpoints works really well.",
+    createdAt: '2021-12-27T16:57:00.067Z',
+    score: 12,
+    user: {
+      image: {
+        png: '/avatars/image-amyrobson.png',
+        webp: '/avatars/image-amyrobson.webp'
+      },
+      username: 'amyrobson'
+    },
+    replies: []
   }
 </script>
 
@@ -20,16 +28,18 @@
   <div class="space-y-4">
     <div class="flex items-center gap-4">
       <img
-        src={data.photoUrl}
+        src={data.user.image.png}
         alt="author avatar"
         class="rounded-full w-10 h-10"
       />
-      <span>{data.author}</span>
-      <span class="text-gray-500">{data.date}</span>
+      <span>{data.user.username}</span>
+      <span class="text-gray-500"
+        >{timeDifference(new Date(data.createdAt))}</span
+      >
     </div>
-    <p class="text-gray-500">{data.text}</p>
+    <p class="text-gray-500">{data.content}</p>
   </div>
-  <Counter />
+  <Counter value={data.score} />
   <Button
     variant="ghost"
     classes="absolute bottom-5 right-5 md:top-5 md:bottom-auto flex items-center gap-2"
@@ -38,4 +48,4 @@
     Reply
   </Button>
 </Card>
-<CommentInput avatar={data.photoUrl} />
+<!-- <CommentInput avatar={data.user.image.png} /> -->
