@@ -5,7 +5,6 @@
   import type { Comment, Reply } from '@types'
   import { timeDifference } from '@utils'
   import CommentInput from './CommentInput.svelte'
-  import replySvg from '/icon-reply.svg'
 
   export let data: Comment = {
     id: 1,
@@ -44,7 +43,7 @@
     variant="ghost"
     classes="absolute bottom-5 right-5 md:top-5 md:bottom-auto flex items-center gap-2"
   >
-    <img src={replySvg} alt="" />
+    <img src="/icon-reply.svg" alt="" />
     Reply
   </Button>
 </Card>
