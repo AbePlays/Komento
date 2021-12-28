@@ -31,7 +31,7 @@
         alt="author avatar"
         class="rounded-full w-10 h-10"
       />
-      <span>{data.user.username}</span>
+      <span class="font-medium">{data.user.username}</span>
       <span class="text-gray-500"
         >{timeDifference(new Date(data.createdAt))}</span
       >
