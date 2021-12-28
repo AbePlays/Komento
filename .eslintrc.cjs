@@ -1,17 +1,28 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'prettier'
-  ],
+  extends: ['eslint:recommended', 'eslint-config-prettier'],
   rules: {
-    '@typescript-eslint/no-empty-function': ['off']
+    'no-unused-vars': ['error', { args: 'none' }]
   },
   plugins: ['svelte3', '@typescript-eslint'],
   ignorePatterns: ['*.cjs'],
-  overrides: [{ files: ['*.svelte'], processor: 'svelte3/svelte3' }],
+  overrides: [
+    { files: ['*.svelte'], processor: 'svelte3/svelte3' },
+    {
+      files: '**/*.+(ts)',
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: './tsconfig.json'
+      },
+      plugins: ['@typescript-eslint/eslint-plugin'],
+      extends: [
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:@typescript-eslint/recommended',
+        'prettier'
+      ]
+    }
+  ],
   settings: {
     'svelte3/typescript': () => require('typescript')
   },

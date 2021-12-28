@@ -2,9 +2,8 @@
   import Button from '@components/Button.svelte'
   import Card from '@components/Card.svelte'
   import Counter from '@components/Counter.svelte'
-  import type { Comment, Reply } from '@types'
+  import type { Comment } from '@types'
   import { timeDifference } from '@utils'
-  import CommentInput from './CommentInput.svelte'
 
   export let data: Comment = {
     id: 1,
@@ -47,4 +46,3 @@
     Reply
   </Button>
 </Card>
-<!-- <CommentInput avatar={data.user.image.png} /> -->
