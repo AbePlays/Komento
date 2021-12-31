@@ -2,10 +2,10 @@
   import Button from '@components/Button.svelte'
   import Card from '@components/Card.svelte'
   import Counter from '@components/Counter.svelte'
-  import type { Comment } from '@types'
+  import type { Reply } from '@types'
   import { timeDifference } from '@utils'
 
-  export let data: Comment
+  export let data: Reply
 </script>
 
 <Card classes="flex flex-col md:flex-row-reverse gap-4 md:gap-6 relative">
@@ -21,7 +21,10 @@
         >{timeDifference(new Date(data.createdAt))}</span
       >
     </div>
-    <p class="text-gray-500">{data.content}</p>
+    <p class="text-gray-500">
+      <span class="text-indigo-800 font-medium">@{data.replyingTo}</span>
+      {data.content}
+    </p>
   </div>
   <Counter value={data.score} />
   <Button

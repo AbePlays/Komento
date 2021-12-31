@@ -20,7 +20,7 @@
 </script>
 
 <script lang="ts">
-  import Comment from '@components/Comment/Comment.svelte'
+  import CommentContainer from '@components/Comment/CommentContainer.svelte'
   import CommentInput from '@components/Comment/CommentInput.svelte'
   import type { UserData } from '@types'
 
@@ -33,10 +33,14 @@
 </svelte:head>
 
 <div class="bg-gray-100 min-h-screen">
-  <div class="max-w-screen-md mx-auto px-4 py-8 space-y-4">
-    {#each comments as comment}
-      <Comment data={comment} />
-    {/each}
-    <CommentInput avatar={currentUser.image.png} btnText="Send" />
+  <div class="max-w-screen-md mx-auto">
+    <section class="px-4 pt-8 pb-2 space-y-4">
+      {#each comments as comment}
+        <CommentContainer {comment} replies={comment.replies} />
+      {/each}
+    </section>
+    <section class="sticky bottom-0 w-full p-4 pb-8 bg-gray-100">
+      <CommentInput avatar={currentUser.image.png} btnText="Send" />
+    </section>
   </div>
 </div>
