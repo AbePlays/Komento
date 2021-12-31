@@ -2,6 +2,8 @@
   import Button from '@components/Button.svelte'
   import Card from '@components/Card.svelte'
   import Input from '@components/Input.svelte'
+  import { comments, currentUser } from '@store'
+  import type { Comment } from '@types'
 
   export let avatar: string
   export let btnText = 'Reply'
@@ -12,7 +14,17 @@
   }
 
   const submitHandler = () => {
-    console.log(text)
+    const newComment: Comment = {
+      content: text,
+      createdAt: new Date().toISOString(),
+      id: Math.random(),
+      replies: [],
+      score: 0,
+      user: $currentUser
+    }
+    comments.update((comments) => [newComment, ...comments])
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    text = ''
   }
 </script>
 
