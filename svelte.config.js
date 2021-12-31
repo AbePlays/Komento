@@ -15,6 +15,7 @@ const config = {
       resolve: {
         alias: {
           '@components': path.resolve('./src/components'),
+          '@store': path.resolve('./src/store'),
           '@types': path.resolve('./src/types'),
           '@utils': path.resolve('./src/utils')
         }
