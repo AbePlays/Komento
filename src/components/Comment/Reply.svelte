@@ -3,6 +3,7 @@
   import Card from '@components/Card.svelte'
   import CommentInput from './CommentInput.svelte'
   import Counter from '@components/Counter.svelte'
+  import Input from '@components/Input.svelte'
   import Modal from '@components/Modal.svelte'
   import Overlay from '@components/Overlay.svelte'
   import { comments, currentUser } from '@store'
@@ -10,8 +11,14 @@
   import { timeDifference } from '@utils'
 
   export let data: Reply
+  let isEditing = false
   let showModal = false
   let showReply = false
+  let value = data.content
+
+  const inputHandler = (e: Event) => {
+    value = (e.target as HTMLTextAreaElement).value
+  }
 
   const deleteHandler = () => {
     const newComments = $comments.map((comment) => {
@@ -49,6 +56,22 @@
     showReply = false
   }
 
+  const updateReply = () => {
+    comments.update((prevComments) => {
+      const newComments = prevComments.map((comment) => {
+        const { replies } = comment
+        const index = replies.findIndex((reply) => reply.id === data.id)
+        if (index !== -1) {
+          replies[index].content = value
+        }
+        return comment
+      })
+      return newComments
+    })
+    isEditing = false
+  }
+
+  const toggleEditing = () => (isEditing = !isEditing)
   const toggleModal = () => (showModal = !showModal)
   const toggleReply = () => (showReply = !showReply)
 
@@ -75,10 +98,20 @@
         >{timeDifference(new Date(data.createdAt))}</span
       >
     </div>
-    <p class="text-gray-500">
-      <span class="text-indigo-800 font-medium">@{data.replyingTo}</span>
-      {data.content}
-    </p>
+    {#if isEditing}
+      <label for="reply" class="sr-only">Reply</label>
+      <Input id="reply" {value} onInput={inputHandler} />
+      <div class="text-right">
+        <Button classes="uppercase ml-auto" onClick={updateReply}>
+          Update</Button
+        >
+      </div>
+    {:else}
+      <p class="text-gray-500">
+        <span class="text-indigo-800 font-medium">@{data.replyingTo}</span>
+        {data.content}
+      </p>
+    {/if}
   </div>
   <Counter value={data.score} />
   <div class="absolute bottom-5 right-5 md:top-5 md:bottom-auto flex gap-2">
@@ -91,15 +124,24 @@
         <img src="/icon-delete.svg" alt="" />
         Delete
       </Button>
+      <Button
+        variant="ghost"
+        classes="flex items-center gap-2"
+        onClick={toggleEditing}
+      >
+        <img src="/icon-edit.svg" alt="" />
+        Edit
+      </Button>
+    {:else}
+      <Button
+        variant="ghost"
+        classes="flex items-center gap-2"
+        onClick={toggleReply}
+      >
+        <img src="/icon-reply.svg" alt="" />
+        Reply
+      </Button>
     {/if}
-    <Button
-      variant="ghost"
-      classes="flex items-center gap-2"
-      onClick={toggleReply}
-    >
-      <img src="/icon-reply.svg" alt="" />
-      Reply
-    </Button>
   </div>
 </Card>
 {#if showModal}
