@@ -10,11 +10,11 @@ const timeDifference = (previous: Date, current = new Date()): string => {
   const years = Math.round(months / 12)
 
   if (seconds < 45) {
-    return 'few seconds ago'
+    return 'few secs ago'
   } else if (seconds < 90) {
-    return 'a minute ago'
+    return 'a min ago'
   } else if (minutes < 45) {
-    return minutes + ' minutes ago'
+    return minutes + ' mins ago'
   } else if (minutes < 90) {
     return 'an hour ago'
   } else if (hours < 24) {

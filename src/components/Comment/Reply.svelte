@@ -146,7 +146,7 @@
 </Card>
 {#if showModal}
   <Overlay classes="!m-0">
-    <Modal onAccept={deleteHandler} onDecline={toggleModal} />
+    <Modal classes="mx-4" onAccept={deleteHandler} onDecline={toggleModal} />
   </Overlay>
 {/if}
 {#if showReply}
