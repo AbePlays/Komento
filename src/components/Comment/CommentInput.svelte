@@ -7,6 +7,7 @@
 
   export let avatar: string
   export let btnText = 'Reply'
+  export let onSubmit: (content: string) => void = null
   let text = ''
 
   const inputHanlder = (e: Event) => {
@@ -14,16 +15,20 @@
   }
 
   const submitHandler = () => {
-    const newComment: Comment = {
-      content: text,
-      createdAt: new Date().toISOString(),
-      id: Math.random(),
-      replies: [],
-      score: 0,
-      user: $currentUser
+    if (onSubmit) {
+      onSubmit(text)
+    } else {
+      const newComment: Comment = {
+        content: text,
+        createdAt: new Date().toISOString(),
+        id: Math.random(),
+        replies: [],
+        score: 0,
+        user: $currentUser
+      }
+      comments.update((prevComments) => [newComment, ...prevComments])
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
-    comments.update((comments) => [newComment, ...comments])
-    window.scrollTo({ top: 0, behavior: 'smooth' })
     text = ''
   }
 </script>

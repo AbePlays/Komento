@@ -2,6 +2,8 @@
   import Button from './Button.svelte'
 
   export let classes = ''
+  export let onAccept: () => void = () => {}
+  export let onDecline: () => void = () => {}
 </script>
 
 <div
@@ -13,9 +15,12 @@
     and can&apos;t be undone.
   </p>
   <div class="flex gap-4">
-    <Button classes="w-full bg-gray-500 uppercase">No, Cancel</Button>
-    <Button classes="w-full bg-red-600 bg-opacity-80 uppercase"
-      >Yes, Delete</Button
+    <Button classes="w-full bg-gray-500 uppercase" onClick={onDecline}
+      >No, Cancel</Button
+    >
+    <Button
+      classes="w-full bg-red-600 bg-opacity-80 uppercase"
+      onClick={onAccept}>Yes, Delete</Button
     >
   </div>
 </div>

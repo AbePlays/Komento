@@ -1,18 +1,47 @@
 <script lang="ts">
   import Button from '@components/Button.svelte'
   import Card from '@components/Card.svelte'
+  import CommentInput from './CommentInput.svelte'
   import Counter from '@components/Counter.svelte'
+  import Modal from '@components/Modal.svelte'
+  import Overlay from '@components/Overlay.svelte'
   import { comments, currentUser } from '@store'
-  import type { Comment } from '@types'
+  import type { Comment, Reply } from '@types'
   import { timeDifference } from '@utils'
 
   export let data: Comment
+  let showModal = false
+  let showReply = false
 
-  const deleteHanlder = () => {
+  const deleteHandler = () => {
     comments.update((comments) =>
       comments.filter((comment) => comment.id !== data.id)
     )
+    showModal = false
   }
+
+  const submitHandler = (text: string) => {
+    const newComments = $comments.map((comment) => {
+      if (comment.id === data.id) {
+        const { replies } = comment
+        const newReply: Reply = {
+          content: text,
+          createdAt: new Date().toISOString(),
+          id: Math.random(),
+          user: $currentUser,
+          replyingTo: comment.user.username,
+          score: 0
+        }
+        replies.push(newReply)
+      }
+      return comment
+    })
+    comments.set(newComments)
+    showReply = false
+  }
+
+  const toggleModal = () => (showModal = !showModal)
+  const toggleReply = () => (showReply = !showReply)
 
   const isCommentFromUser = data.user.username === $currentUser.username
 </script>
@@ -45,15 +74,27 @@
       <Button
         variant="ghost"
         classes="flex items-center gap-2 text-[#ED6368]"
-        onClick={deleteHanlder}
+        onClick={toggleModal}
       >
         <img src="/icon-delete.svg" alt="" />
         Delete
       </Button>
     {/if}
-    <Button variant="ghost" classes="flex items-center gap-2">
+    <Button
+      variant="ghost"
+      classes="flex items-center gap-2"
+      onClick={toggleReply}
+    >
       <img src="/icon-reply.svg" alt="" />
       Reply
     </Button>
   </div>
 </Card>
+{#if showModal}
+  <Overlay classes="!m-0">
+    <Modal onAccept={deleteHandler} onDecline={toggleModal} />
+  </Overlay>
+{/if}
+{#if showReply}
+  <CommentInput avatar={$currentUser.image.png} onSubmit={submitHandler} />
+{/if}
