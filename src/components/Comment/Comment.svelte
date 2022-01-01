@@ -20,43 +20,43 @@
     value = (e.target as HTMLTextAreaElement).value
   }
 
-  const deleteHandler = () => {
-    comments.update((comments) =>
-      comments.filter((comment) => comment.id !== data.id)
+  const deleteComment = () => {
+    comments.update((prevComments) =>
+      prevComments.filter((comment) => comment.id !== data.id)
     )
     showModal = false
   }
 
-  const submitHandler = (text: string) => {
-    const newComments = $comments.map((comment) => {
-      if (comment.id === data.id) {
-        const { replies } = comment
-        const newReply: Reply = {
-          content: text,
-          createdAt: new Date().toISOString(),
-          id: Math.random(),
-          user: $currentUser,
-          replyingTo: comment.user.username,
-          score: 0
+  const submitReply = (text: string) => {
+    comments.update((prevComments) =>
+      prevComments.map((comment) => {
+        if (comment.id === data.id) {
+          const { replies } = comment
+          const newReply: Reply = {
+            content: text,
+            createdAt: new Date().toISOString(),
+            id: Math.random(),
+            user: $currentUser,
+            replyingTo: comment.user.username,
+            score: 0
+          }
+          replies.push(newReply)
         }
-        replies.push(newReply)
-      }
-      return comment
-    })
-    comments.set(newComments)
+        return comment
+      })
+    )
     showReply = false
   }
 
   const updateComment = () => {
-    comments.update((prevComments) => {
-      const newComments = prevComments.map((comment) => {
+    comments.update((prevComments) =>
+      prevComments.map((comment) => {
         if (comment.id === data.id) {
           comment.content = value
         }
         return comment
       })
-      return newComments
-    })
+    )
     isEditing = false
   }
 
@@ -132,9 +132,9 @@
 </Card>
 {#if showModal}
   <Overlay classes="!m-0">
-    <Modal classes="mx-4" onAccept={deleteHandler} onDecline={toggleModal} />
+    <Modal classes="mx-4" onAccept={deleteComment} onDecline={toggleModal} />
   </Overlay>
 {/if}
 {#if showReply}
-  <CommentInput avatar={$currentUser.image.png} onSubmit={submitHandler} />
+  <CommentInput avatar={$currentUser.image.png} onSubmit={submitReply} />
 {/if}

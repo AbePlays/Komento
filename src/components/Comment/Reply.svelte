@@ -20,45 +20,46 @@
     value = (e.target as HTMLTextAreaElement).value
   }
 
-  const deleteHandler = () => {
-    const newComments = $comments.map((comment) => {
-      const { replies } = comment
-      if (replies) {
-        const index = replies.findIndex((reply) => reply.id === data.id)
-        if (index !== -1) {
-          replies.splice(index, 1)
+  const deleteReply = () => {
+    comments.update((prevComments) =>
+      prevComments.map((comment) => {
+        const { replies = [] } = comment
+        if (replies.length > 0) {
+          const index = replies.findIndex((reply) => reply.id === data.id)
+          if (index !== -1) {
+            replies.splice(index, 1)
+          }
         }
-        comment.replies = replies
-      }
-      return comment
-    })
-    comments.set(newComments)
+        return comment
+      })
+    )
     showModal = false
   }
 
-  const submitHandler = (text: string) => {
-    const newComments = $comments.map((comment) => {
-      if (comment.user.username === data.replyingTo) {
-        const { replies } = comment
-        const newReply: Reply = {
-          content: text,
-          createdAt: new Date().toISOString(),
-          id: Math.random(),
-          user: $currentUser,
-          replyingTo: data.user.username,
-          score: 0
+  const submitReply = (text: string) => {
+    comments.update((prevComments) =>
+      prevComments.map((comment) => {
+        if (comment.user.username === data.replyingTo) {
+          const { replies = [] } = comment
+          const newReply: Reply = {
+            content: text,
+            createdAt: new Date().toISOString(),
+            id: Math.random(),
+            user: $currentUser,
+            replyingTo: data.user.username,
+            score: 0
+          }
+          replies.push(newReply)
         }
-        replies.push(newReply)
-      }
-      return comment
-    })
-    comments.set(newComments)
+        return comment
+      })
+    )
     showReply = false
   }
 
   const updateReply = () => {
-    comments.update((prevComments) => {
-      const newComments = prevComments.map((comment) => {
+    comments.update((prevComments) =>
+      prevComments.map((comment) => {
         const { replies } = comment
         const index = replies.findIndex((reply) => reply.id === data.id)
         if (index !== -1) {
@@ -66,8 +67,7 @@
         }
         return comment
       })
-      return newComments
-    })
+    )
     isEditing = false
   }
 
@@ -146,9 +146,9 @@
 </Card>
 {#if showModal}
   <Overlay classes="!m-0">
-    <Modal classes="mx-4" onAccept={deleteHandler} onDecline={toggleModal} />
+    <Modal classes="mx-4" onAccept={deleteReply} onDecline={toggleModal} />
   </Overlay>
 {/if}
 {#if showReply}
-  <CommentInput avatar={$currentUser.image.png} onSubmit={submitHandler} />
+  <CommentInput avatar={$currentUser.image.png} onSubmit={submitReply} />
 {/if}
