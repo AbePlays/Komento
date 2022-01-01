@@ -38,7 +38,7 @@
           createdAt: new Date().toISOString(),
           id: Math.random(),
           user: $currentUser,
-          replyingTo: comment.user.username,
+          replyingTo: data.user.username,
           score: 0
         }
         replies.push(newReply)
