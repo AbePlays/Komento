@@ -5,7 +5,7 @@
 </script>
 
 <div
-  class="flex flex-row md:flex-col gap-4 md:gap-2 items-baseline md:items-center justify-center bg-gray-100 w-min h-min px-4 md:px-2 rounded-lg font-semibold drop-shadow"
+  class="flex flex-row md:flex-col gap-4 md:gap-2 items-baseline md:items-center justify-center bg-gray-100 w-min h-min px-4 md:px-2 rounded-lg font-semibold drop-shadow-sm"
 >
   <button
     class="p-1 text-gray-400 hover:text-indigo-800 text-lg transition-colors"

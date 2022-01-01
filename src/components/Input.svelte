@@ -5,7 +5,9 @@
   export let onInput: (e: Event) => void
 </script>
 
+<!-- svelte-ignore a11y-autofocus -->
 <textarea
+  autofocus
   type="text"
   name={id}
   {id}
