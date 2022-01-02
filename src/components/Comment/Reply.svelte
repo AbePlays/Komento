@@ -45,10 +45,12 @@
             const newReply: Reply = {
               content: text,
               createdAt: new Date().toISOString(),
+              dislikedByUser: false,
               id: Math.random(),
-              user: $currentUser,
+              likedByUser: false,
               replyingTo: data.user.username,
-              score: 0
+              score: 0,
+              user: $currentUser
             }
             replies.push(newReply)
           }
@@ -74,6 +76,92 @@
       )
     }
     isEditing = false
+  }
+
+  const upvoteHandler = () => {
+    if (data.likedByUser) {
+      comments.update((prevComments) =>
+        prevComments.map((comment) => {
+          const { replies = [] } = comment
+          const index = replies.findIndex((reply) => reply.id === data.id)
+          if (index !== -1) {
+            replies[index].score -= 1
+            replies[index].likedByUser = false
+          }
+          return comment
+        })
+      )
+    } else {
+      if (data.dislikedByUser) {
+        comments.update((prevComments) =>
+          prevComments.map((comment) => {
+            const { replies = [] } = comment
+            const index = replies.findIndex((reply) => reply.id === data.id)
+            if (index !== -1) {
+              replies[index].score += 2
+              replies[index].dislikedByUser = false
+              replies[index].likedByUser = true
+            }
+            return comment
+          })
+        )
+      } else {
+        comments.update((prevComments) =>
+          prevComments.map((comment) => {
+            const { replies = [] } = comment
+            const index = replies.findIndex((reply) => reply.id === data.id)
+            if (index !== -1) {
+              replies[index].score++
+              replies[index].likedByUser = true
+            }
+            return comment
+          })
+        )
+      }
+    }
+  }
+
+  const downvoteHandler = () => {
+    if (data.dislikedByUser) {
+      comments.update((prevComments) =>
+        prevComments.map((comment) => {
+          const { replies = [] } = comment
+          const index = replies.findIndex((reply) => reply.id === data.id)
+          if (index !== -1) {
+            replies[index].score++
+            replies[index].dislikedByUser = false
+          }
+          return comment
+        })
+      )
+    } else {
+      if (data.likedByUser) {
+        comments.update((prevComments) =>
+          prevComments.map((comment) => {
+            const { replies = [] } = comment
+            const index = replies.findIndex((reply) => reply.id === data.id)
+            if (index !== -1) {
+              replies[index].score -= 2
+              replies[index].likedByUser = false
+              replies[index].dislikedByUser = true
+            }
+            return comment
+          })
+        )
+      } else {
+        comments.update((prevComments) =>
+          prevComments.map((comment) => {
+            const { replies = [] } = comment
+            const index = replies.findIndex((reply) => reply.id === data.id)
+            if (index !== -1) {
+              replies[index].score--
+              replies[index].dislikedByUser = true
+            }
+            return comment
+          })
+        )
+      }
+    }
   }
 
   const toggleEditing = () => (isEditing = !isEditing)
@@ -122,7 +210,13 @@
       </p>
     {/if}
   </div>
-  <Counter value={data.score} />
+  <Counter
+    isDisliked={data.dislikedByUser}
+    isLiked={data.likedByUser}
+    onDecrement={downvoteHandler}
+    onIncrement={upvoteHandler}
+    value={data.score}
+  />
   <div class="absolute bottom-5 right-5 md:top-5 md:bottom-auto flex gap-2">
     {#if isReplyFromUser}
       <Button
