@@ -7,7 +7,7 @@
   // setting class names
   let classList = ''
   if (variant === 'solid') {
-    classList = 'bg-indigo-800 text-white rounded-lg px-5 py-3'
+    classList = 'bg-indigo-800 text-white rounded-lg px-4 py-2 sm:px-5 sm:py-3'
   } else if (variant === 'ghost') {
     classList = 'text-indigo-800 px-2 py-1'
   }
