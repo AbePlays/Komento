@@ -37,37 +37,42 @@
   }
 
   const submitReply = (text: string) => {
-    comments.update((prevComments) =>
-      prevComments.map((comment) => {
-        if (comment.user.username === data.replyingTo) {
-          const { replies = [] } = comment
-          const newReply: Reply = {
-            content: text,
-            createdAt: new Date().toISOString(),
-            id: Math.random(),
-            user: $currentUser,
-            replyingTo: data.user.username,
-            score: 0
+    if (text.trim().length > 0) {
+      comments.update((prevComments) =>
+        prevComments.map((comment) => {
+          if (comment.user.username === data.replyingTo) {
+            const { replies = [] } = comment
+            const newReply: Reply = {
+              content: text,
+              createdAt: new Date().toISOString(),
+              id: Math.random(),
+              user: $currentUser,
+              replyingTo: data.user.username,
+              score: 0
+            }
+            replies.push(newReply)
           }
-          replies.push(newReply)
-        }
-        return comment
-      })
-    )
+          return comment
+        })
+      )
+    }
+
     showReply = false
   }
 
   const updateReply = () => {
-    comments.update((prevComments) =>
-      prevComments.map((comment) => {
-        const { replies } = comment
-        const index = replies.findIndex((reply) => reply.id === data.id)
-        if (index !== -1) {
-          replies[index].content = value
-        }
-        return comment
-      })
-    )
+    if (value.trim().length > 0) {
+      comments.update((prevComments) =>
+        prevComments.map((comment) => {
+          const { replies } = comment
+          const index = replies.findIndex((reply) => reply.id === data.id)
+          if (index !== -1) {
+            replies[index].content = value
+          }
+          return comment
+        })
+      )
+    }
     isEditing = false
   }
 
@@ -100,11 +105,15 @@
     </div>
     {#if isEditing}
       <label for="reply" class="sr-only">Reply</label>
-      <Input id="reply" {value} onInput={inputHandler} />
-      <div class="text-right">
-        <Button classes="uppercase ml-auto" onClick={updateReply}>
-          Update</Button
+      <Input id="reply" value={data.content} onInput={inputHandler} />
+      <div class="flex gap-2 justify-end">
+        <Button
+          classes="uppercase bg-red-600 bg-opacity-80"
+          onClick={toggleEditing}
         >
+          Cancel</Button
+        >
+        <Button classes="uppercase" onClick={updateReply}>Update</Button>
       </div>
     {:else}
       <p class="text-gray-500">
@@ -150,5 +159,10 @@
   </Overlay>
 {/if}
 {#if showReply}
-  <CommentInput avatar={$currentUser.image.png} onSubmit={submitReply} />
+  <CommentInput
+    showCancel
+    avatar={$currentUser.image.png}
+    onCancel={toggleReply}
+    onSubmit={submitReply}
+  />
 {/if}
