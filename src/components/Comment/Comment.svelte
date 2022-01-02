@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { afterUpdate } from 'svelte'
   import Button from '@components/Button.svelte'
   import Card from '@components/Card.svelte'
   import CommentInput from './CommentInput.svelte'
@@ -14,7 +15,14 @@
   let isEditing = false
   let showModal = false
   let showReply = false
+  let element: HTMLElement = null
   let value = data.content
+
+  afterUpdate(() => {
+    if (showReply && element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  })
 
   const inputHandler = (e: Event) => {
     value = (e.target as HTMLTextAreaElement).value
@@ -226,10 +234,12 @@
   </Overlay>
 {/if}
 {#if showReply}
-  <CommentInput
-    showCancel
-    avatar={$currentUser.image.png}
-    onCancel={toggleReply}
-    onSubmit={submitReply}
-  />
+  <div bind:this={element}>
+    <CommentInput
+      showCancel
+      avatar={$currentUser.image.png}
+      onCancel={toggleReply}
+      onSubmit={submitReply}
+    />
+  </div>
 {/if}
