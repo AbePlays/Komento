@@ -9,24 +9,28 @@ export interface User {
 }
 
 export interface Reply {
-  id: number
   content: string
   createdAt: string
-  score: number
+  dislikedByUser: boolean
+  id: number
+  likedByUser: boolean
   replyingTo: string
+  score: number
   user: User
 }
 
 export interface Comment {
-  id: number
   content: string
   createdAt: string
+  dislikedByUser: boolean
+  id: number
+  likedByUser: boolean
+  replies: Reply[]
   score: number
   user: User
-  replies: Reply[]
 }
 
 export interface UserData {
-  currentUser: User
   comments: Comment[]
+  currentUser: User
 }
