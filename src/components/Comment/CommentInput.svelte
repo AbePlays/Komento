@@ -23,7 +23,9 @@
       const newComment: Comment = {
         content: text,
         createdAt: new Date().toISOString(),
+        dislikedByUser: false,
         id: Math.random(),
+        likedByUser: false,
         replies: [],
         score: 0,
         user: $currentUser
