@@ -28,35 +28,39 @@
   }
 
   const submitReply = (text: string) => {
-    comments.update((prevComments) =>
-      prevComments.map((comment) => {
-        if (comment.id === data.id) {
-          const { replies } = comment
-          const newReply: Reply = {
-            content: text,
-            createdAt: new Date().toISOString(),
-            id: Math.random(),
-            user: $currentUser,
-            replyingTo: comment.user.username,
-            score: 0
+    if (text.trim().length > 0) {
+      comments.update((prevComments) =>
+        prevComments.map((comment) => {
+          if (comment.id === data.id) {
+            const { replies } = comment
+            const newReply: Reply = {
+              content: text,
+              createdAt: new Date().toISOString(),
+              id: Math.random(),
+              user: $currentUser,
+              replyingTo: comment.user.username,
+              score: 0
+            }
+            replies.push(newReply)
           }
-          replies.push(newReply)
-        }
-        return comment
-      })
-    )
+          return comment
+        })
+      )
+    }
     showReply = false
   }
 
   const updateComment = () => {
-    comments.update((prevComments) =>
-      prevComments.map((comment) => {
-        if (comment.id === data.id) {
-          comment.content = value
-        }
-        return comment
-      })
-    )
+    if (value.trim().length > 0) {
+      comments.update((prevComments) =>
+        prevComments.map((comment) => {
+          if (comment.id === data.id) {
+            comment.content = value
+          }
+          return comment
+        })
+      )
+    }
     isEditing = false
   }
 
@@ -89,11 +93,15 @@
     </div>
     {#if isEditing}
       <label for="reply" class="sr-only">Reply</label>
-      <Input id="reply" {value} onInput={inputHandler} />
-      <div class="text-right">
-        <Button classes="uppercase ml-auto" onClick={updateComment}>
-          Update</Button
+      <Input id="reply" value={data.content} onInput={inputHandler} />
+      <div class="flex gap-2 justify-end">
+        <Button
+          classes="uppercase bg-red-600 bg-opacity-80"
+          onClick={toggleEditing}
         >
+          Cancel</Button
+        >
+        <Button classes="uppercase" onClick={updateComment}>Update</Button>
       </div>
     {:else}
       <p class="text-gray-500">{data.content}</p>
@@ -136,5 +144,10 @@
   </Overlay>
 {/if}
 {#if showReply}
-  <CommentInput avatar={$currentUser.image.png} onSubmit={submitReply} />
+  <CommentInput
+    showCancel
+    avatar={$currentUser.image.png}
+    onCancel={toggleReply}
+    onSubmit={submitReply}
+  />
 {/if}

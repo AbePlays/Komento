@@ -8,6 +8,8 @@
   export let avatar: string
   export let btnText = 'Reply'
   export let onSubmit: (content: string) => void = null
+  export let showCancel = false
+  export let onCancel: () => void = () => {}
   let text = ''
 
   const inputHanlder = (e: Event) => {
@@ -58,7 +60,15 @@
         alt="author avatar"
         class="block md:hidden h-10 w-10 rounded-full"
       />
-      <Button classes="uppercase" type="submit">{btnText}</Button>
+      <div class="flex gap-2 sm:flex-col">
+        {#if showCancel}
+          <Button
+            classes="uppercase bg-red-600 bg-opacity-80"
+            onClick={onCancel}>Cancel</Button
+          >
+        {/if}
+        <Button classes="uppercase" type="submit">{btnText}</Button>
+      </div>
     </div>
   </form>
 </Card>
