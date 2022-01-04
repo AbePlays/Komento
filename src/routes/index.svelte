@@ -43,7 +43,7 @@
         <CommentContainer {comment} replies={comment.replies} />
       {/each}
     </section>
-    <section class="sticky bottom-0 w-full p-4 pb-8 bg-gray-100">
+    <section class="sm:sticky sm:bottom-0 w-full p-4 pb-8 bg-gray-100">
       <CommentInput avatar={user.image.png} btnText="Send" />
     </section>
   </div>
