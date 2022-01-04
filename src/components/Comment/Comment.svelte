@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { afterUpdate } from 'svelte'
   import Button from '@components/Button.svelte'
   import Card from '@components/Card.svelte'
   import CommentInput from './CommentInput.svelte'
@@ -14,7 +15,14 @@
   let isEditing = false
   let showModal = false
   let showReply = false
+  let element: HTMLElement = null
   let value = data.content
+
+  afterUpdate(() => {
+    if (showReply && element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  })
 
   const inputHandler = (e: Event) => {
     value = (e.target as HTMLTextAreaElement).value
@@ -36,10 +44,12 @@
             const newReply: Reply = {
               content: text,
               createdAt: new Date().toISOString(),
+              dislikedByUser: false,
               id: Math.random(),
-              user: $currentUser,
+              likedByUser: false,
               replyingTo: comment.user.username,
-              score: 0
+              score: 0,
+              user: $currentUser
             }
             replies.push(newReply)
           }
@@ -62,6 +72,80 @@
       )
     }
     isEditing = false
+  }
+
+  const upvoteHandler = () => {
+    if (data.likedByUser) {
+      comments.update((prevComments) =>
+        prevComments.map((comment) => {
+          if (comment.id === data.id) {
+            comment.score--
+            comment.likedByUser = false
+          }
+          return comment
+        })
+      )
+    } else {
+      if (data.dislikedByUser) {
+        comments.update((prevComments) =>
+          prevComments.map((comment) => {
+            if (comment.id === data.id) {
+              comment.score += 2
+              comment.likedByUser = true
+              comment.dislikedByUser = false
+            }
+            return comment
+          })
+        )
+      } else {
+        comments.update((prevComments) =>
+          prevComments.map((comment) => {
+            if (comment.id === data.id) {
+              comment.score++
+              comment.likedByUser = true
+            }
+            return comment
+          })
+        )
+      }
+    }
+  }
+
+  const downvoteHandler = () => {
+    if (data.dislikedByUser) {
+      comments.update((prevComments) =>
+        prevComments.map((comment) => {
+          if (comment.id === data.id) {
+            comment.score++
+            comment.dislikedByUser = false
+          }
+          return comment
+        })
+      )
+    } else {
+      if (data.likedByUser) {
+        comments.update((prevComments) =>
+          prevComments.map((comment) => {
+            if (comment.id === data.id) {
+              comment.score -= 2
+              comment.likedByUser = false
+              comment.dislikedByUser = true
+            }
+            return comment
+          })
+        )
+      } else {
+        comments.update((prevComments) =>
+          prevComments.map((comment) => {
+            if (comment.id === data.id) {
+              comment.score--
+              comment.dislikedByUser = true
+            }
+            return comment
+          })
+        )
+      }
+    }
   }
 
   const toggleEditing = () => (isEditing = !isEditing)
@@ -107,7 +191,13 @@
       <p class="text-gray-500">{data.content}</p>
     {/if}
   </div>
-  <Counter value={data.score} />
+  <Counter
+    isDisliked={data.dislikedByUser}
+    isLiked={data.likedByUser}
+    onDecrement={downvoteHandler}
+    onIncrement={upvoteHandler}
+    value={data.score}
+  />
   <div class="absolute bottom-5 right-5 md:top-5 md:bottom-auto flex gap-2">
     {#if isCommentFromUser}
       <Button
@@ -144,10 +234,12 @@
   </Overlay>
 {/if}
 {#if showReply}
-  <CommentInput
-    showCancel
-    avatar={$currentUser.image.png}
-    onCancel={toggleReply}
-    onSubmit={submitReply}
-  />
+  <div bind:this={element}>
+    <CommentInput
+      showCancel
+      avatar={$currentUser.image.png}
+      onCancel={toggleReply}
+      onSubmit={submitReply}
+    />
+  </div>
 {/if}
