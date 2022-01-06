@@ -1,5 +1,6 @@
 <script lang="ts">
   import { afterUpdate } from 'svelte'
+  import { scale, slide } from 'svelte/transition'
   import Button from '@components/Button.svelte'
   import Card from '@components/Card.svelte'
   import CommentInput from './CommentInput.svelte'
@@ -257,11 +258,13 @@
 </Card>
 {#if showModal}
   <Overlay classes="!m-0">
-    <Modal classes="mx-4" onAccept={deleteReply} onDecline={toggleModal} />
+    <div in:scale>
+      <Modal classes="mx-4" onAccept={deleteReply} onDecline={toggleModal} />
+    </div>
   </Overlay>
 {/if}
 {#if showReply}
-  <div bind:this={element}>
+  <div bind:this={element} in:slide={{ delay: 200 }} out:slide>
     <CommentInput
       showCancel
       avatar={$currentUser.image.png}
