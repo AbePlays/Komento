@@ -30,10 +30,12 @@
   }
 
   const deleteComment = () => {
-    comments.update((prevComments) =>
-      prevComments.filter((comment) => comment.id !== data.id)
-    )
-    showModal = false
+    fetch(`/api/comment?id=${data.id}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    }).finally(() => {
+      showModal = false
+    })
   }
 
   const submitReply = (text: string) => {
@@ -63,90 +65,30 @@
 
   const updateComment = () => {
     if (value.trim().length > 0) {
-      comments.update((prevComments) =>
-        prevComments.map((comment) => {
-          if (comment.id === data.id) {
-            comment.content = value
-          }
-          return comment
-        })
-      )
+      fetch('/api/comment', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: value, id: data.id })
+      }).finally(() => {
+        isEditing = false
+      })
     }
-    isEditing = false
   }
 
   const upvoteHandler = () => {
-    if (data.likedByUser) {
-      comments.update((prevComments) =>
-        prevComments.map((comment) => {
-          if (comment.id === data.id) {
-            comment.score--
-            comment.likedByUser = false
-          }
-          return comment
-        })
-      )
-    } else {
-      if (data.dislikedByUser) {
-        comments.update((prevComments) =>
-          prevComments.map((comment) => {
-            if (comment.id === data.id) {
-              comment.score += 2
-              comment.likedByUser = true
-              comment.dislikedByUser = false
-            }
-            return comment
-          })
-        )
-      } else {
-        comments.update((prevComments) =>
-          prevComments.map((comment) => {
-            if (comment.id === data.id) {
-              comment.score++
-              comment.likedByUser = true
-            }
-            return comment
-          })
-        )
-      }
-    }
+    fetch('/api/comment/upvote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commentId: data.id, userId: $currentUser.id })
+    })
   }
 
   const downvoteHandler = () => {
-    if (data.dislikedByUser) {
-      comments.update((prevComments) =>
-        prevComments.map((comment) => {
-          if (comment.id === data.id) {
-            comment.score++
-            comment.dislikedByUser = false
-          }
-          return comment
-        })
-      )
-    } else {
-      if (data.likedByUser) {
-        comments.update((prevComments) =>
-          prevComments.map((comment) => {
-            if (comment.id === data.id) {
-              comment.score -= 2
-              comment.likedByUser = false
-              comment.dislikedByUser = true
-            }
-            return comment
-          })
-        )
-      } else {
-        comments.update((prevComments) =>
-          prevComments.map((comment) => {
-            if (comment.id === data.id) {
-              comment.score--
-              comment.dislikedByUser = true
-            }
-            return comment
-          })
-        )
-      }
-    }
+    fetch('/api/comment/downvote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commentId: data.id, userId: $currentUser.id })
+    })
   }
 
   const toggleEditing = () => (isEditing = !isEditing)
@@ -160,7 +102,7 @@
   <div class="space-y-4 w-full">
     <div class="flex items-center gap-4">
       <img
-        src={data.user.image.png}
+        src={data.user.image}
         alt="author avatar"
         class="rounded-full w-10 h-10"
       />
@@ -240,7 +182,7 @@
   <div bind:this={element} in:slide={{ delay: 200 }} out:slide>
     <CommentInput
       showCancel
-      avatar={$currentUser.image.png}
+      avatar={$currentUser.image}
       onCancel={toggleReply}
       onSubmit={submitReply}
     />
