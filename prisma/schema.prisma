@@ -34,7 +34,7 @@ model Reply {
   id         String  @id @default(dbgenerated()) @map("_id") @db.ObjectId
   content    String
   createdAt  String
-  replyingTo String
   score      Decimal
+  replyingTo String
   user       String
 }
