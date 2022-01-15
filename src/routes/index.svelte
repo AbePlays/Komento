@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   export async function load({ fetch }) {
     // fetch user data
-    const defaultUserID = '61d85e48abb58fc486755b6c'
+    const defaultUserID = '61e25ca379e8e35b5ec98e76'
     const url = `/api/userdata?id=${defaultUserID}`
     const res = await fetch(url)
 

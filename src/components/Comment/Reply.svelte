@@ -8,11 +8,12 @@
   import Input from '@components/Input.svelte'
   import Modal from '@components/Modal.svelte'
   import Overlay from '@components/Overlay.svelte'
-  import { comments, currentUser } from '@store'
+  import { currentUser } from '@store'
   import type { Reply } from '@types'
   import { timeDifference } from '@utils'
 
   export let data: Reply
+  export let commentId: string
   let isEditing = false
   let showModal = false
   let showReply = false
@@ -30,147 +31,63 @@
   }
 
   const deleteReply = () => {
-    comments.update((prevComments) =>
-      prevComments.map((comment) => {
-        const { replies = [] } = comment
-        if (replies.length > 0) {
-          const index = replies.findIndex((reply) => reply.id === data.id)
-          if (index !== -1) {
-            replies.splice(index, 1)
-          }
-        }
-        return comment
-      })
-    )
-    showModal = false
+    fetch(`/api/reply?replyId=${data.id}&commentId=${commentId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    }).finally(() => {
+      showModal = false
+    })
   }
 
   const submitReply = (text: string) => {
     if (text.trim().length > 0) {
-      comments.update((prevComments) =>
-        prevComments.map((comment) => {
-          if (comment.user.username === data.replyingTo) {
-            const { replies = [] } = comment
-            const newReply: Reply = {
-              content: text,
-              createdAt: new Date().toISOString(),
-              dislikedByUser: false,
-              id: Math.random(),
-              likedByUser: false,
-              replyingTo: data.user.username,
-              score: 0,
-              user: $currentUser
-            }
-            replies.push(newReply)
-          }
-          return comment
+      fetch(`/api/reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: text,
+          commentId,
+          replyingTo: data.user.id,
+          userId: $currentUser.id
         })
-      )
+      }).finally(() => {
+        showReply = false
+      })
     }
-
-    showReply = false
   }
 
   const updateReply = () => {
     if (value.trim().length > 0) {
-      comments.update((prevComments) =>
-        prevComments.map((comment) => {
-          const { replies } = comment
-          const index = replies.findIndex((reply) => reply.id === data.id)
-          if (index !== -1) {
-            replies[index].content = value
-          }
-          return comment
-        })
-      )
+      fetch(`/api/reply`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: value, id: data.id })
+      }).finally(() => {
+        isEditing = false
+      })
     }
-    isEditing = false
   }
 
   const upvoteHandler = () => {
-    if (data.likedByUser) {
-      comments.update((prevComments) =>
-        prevComments.map((comment) => {
-          const { replies = [] } = comment
-          const index = replies.findIndex((reply) => reply.id === data.id)
-          if (index !== -1) {
-            replies[index].score -= 1
-            replies[index].likedByUser = false
-          }
-          return comment
-        })
-      )
-    } else {
-      if (data.dislikedByUser) {
-        comments.update((prevComments) =>
-          prevComments.map((comment) => {
-            const { replies = [] } = comment
-            const index = replies.findIndex((reply) => reply.id === data.id)
-            if (index !== -1) {
-              replies[index].score += 2
-              replies[index].dislikedByUser = false
-              replies[index].likedByUser = true
-            }
-            return comment
-          })
-        )
-      } else {
-        comments.update((prevComments) =>
-          prevComments.map((comment) => {
-            const { replies = [] } = comment
-            const index = replies.findIndex((reply) => reply.id === data.id)
-            if (index !== -1) {
-              replies[index].score++
-              replies[index].likedByUser = true
-            }
-            return comment
-          })
-        )
-      }
-    }
+    fetch('/api/reply/upvote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        replyId: data.id,
+        userId: $currentUser.id
+      })
+    })
   }
 
   const downvoteHandler = () => {
-    if (data.dislikedByUser) {
-      comments.update((prevComments) =>
-        prevComments.map((comment) => {
-          const { replies = [] } = comment
-          const index = replies.findIndex((reply) => reply.id === data.id)
-          if (index !== -1) {
-            replies[index].score++
-            replies[index].dislikedByUser = false
-          }
-          return comment
-        })
-      )
-    } else {
-      if (data.likedByUser) {
-        comments.update((prevComments) =>
-          prevComments.map((comment) => {
-            const { replies = [] } = comment
-            const index = replies.findIndex((reply) => reply.id === data.id)
-            if (index !== -1) {
-              replies[index].score -= 2
-              replies[index].likedByUser = false
-              replies[index].dislikedByUser = true
-            }
-            return comment
-          })
-        )
-      } else {
-        comments.update((prevComments) =>
-          prevComments.map((comment) => {
-            const { replies = [] } = comment
-            const index = replies.findIndex((reply) => reply.id === data.id)
-            if (index !== -1) {
-              replies[index].score--
-              replies[index].dislikedByUser = true
-            }
-            return comment
-          })
-        )
-      }
-    }
+    fetch('/api/reply/downvote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        replyId: data.id,
+        userId: $currentUser.id
+      })
+    })
   }
 
   const toggleEditing = () => (isEditing = !isEditing)
@@ -184,7 +101,7 @@
   <div class="space-y-4 w-full">
     <div class="flex items-center gap-4">
       <img
-        src={data.user.image.png}
+        src={data.user.image}
         alt="author avatar"
         class="rounded-full w-10 h-10"
       />
@@ -267,7 +184,7 @@
   <div bind:this={element} in:slide={{ delay: 200 }} out:slide>
     <CommentInput
       showCancel
-      avatar={$currentUser.image.png}
+      avatar={$currentUser.image}
       onCancel={toggleReply}
       onSubmit={submitReply}
     />
