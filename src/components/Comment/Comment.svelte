@@ -1,6 +1,7 @@
 <script lang="ts">
   import { afterUpdate } from 'svelte'
   import { scale, slide } from 'svelte/transition'
+  import { useQueryClient } from '@sveltestack/svelte-query'
   import Button from '@components/Button.svelte'
   import Card from '@components/Card.svelte'
   import CommentInput from './CommentInput.svelte'
@@ -19,6 +20,8 @@
   let element: HTMLElement = null
   let value = data.content
 
+  const queryClient = useQueryClient()
+
   afterUpdate(() => {
     if (showReply && element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -35,6 +38,7 @@
       headers: { 'Content-Type': 'application/json' }
     }).finally(() => {
       showModal = false
+      queryClient.invalidateQueries('userdata')
     })
   }
 
@@ -51,6 +55,7 @@
         })
       }).finally(() => {
         showReply = false
+        queryClient.invalidateQueries('userdata')
       })
     }
   }
@@ -63,6 +68,7 @@
         body: JSON.stringify({ content: value, id: data.id })
       }).finally(() => {
         isEditing = false
+        queryClient.invalidateQueries('userdata')
       })
     }
   }
@@ -72,6 +78,8 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ commentId: data.id, userId: $currentUser.id })
+    }).finally(() => {
+      queryClient.invalidateQueries('userdata')
     })
   }
 
@@ -80,6 +88,8 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ commentId: data.id, userId: $currentUser.id })
+    }).finally(() => {
+      queryClient.invalidateQueries('userdata')
     })
   }
 
