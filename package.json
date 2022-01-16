@@ -40,6 +40,8 @@
   },
   "type": "module",
   "dependencies": {
-    "@prisma/client": "^3.7.0"
+    "@prisma/client": "^3.7.0",
+    "@sveltestack/svelte-query": "^1.5.0",
+    "broadcast-channel": "^4.9.0"
   }
 }
