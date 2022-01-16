@@ -10,6 +10,6 @@
 <Comment data={comment} />
 <div class="space-y-4 pl-4 sm:pl-8 sm:ml-8 border-l-2 border-l-gray-200">
   {#each replies as reply (reply.id)}
-    <Reply data={reply} />
+    <Reply data={reply} commentId={comment.id} />
   {/each}
 </div>

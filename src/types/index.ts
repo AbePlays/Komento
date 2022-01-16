@@ -1,10 +1,6 @@
-export interface Image {
-  png: string
-  webp: string
-}
-
 export interface User {
-  image: Image
+  id: string
+  image: string
   username: string
 }
 
@@ -12,7 +8,7 @@ export interface Reply {
   content: string
   createdAt: string
   dislikedByUser: boolean
-  id: number
+  id: string
   likedByUser: boolean
   replyingTo: string
   score: number
@@ -23,7 +19,7 @@ export interface Comment {
   content: string
   createdAt: string
   dislikedByUser: boolean
-  id: number
+  id: string
   likedByUser: boolean
   replies: Reply[]
   score: number

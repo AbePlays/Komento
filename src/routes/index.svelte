@@ -1,7 +1,8 @@
 <script context="module" lang="ts">
   export async function load({ fetch }) {
     // fetch user data
-    const url = 'data.json'
+    const defaultUserID = '61e25ca379e8e35b5ec98e76'
+    const url = `/api/userdata?id=${defaultUserID}`
     const res = await fetch(url)
 
     if (res.ok) {
@@ -44,7 +45,7 @@
       {/each}
     </section>
     <section class="sm:sticky sm:bottom-0 w-full p-4 pb-8 bg-gray-100">
-      <CommentInput avatar={user.image.png} btnText="Send" />
+      <CommentInput avatar={user.image} btnText="Send" />
     </section>
   </div>
 </div>
