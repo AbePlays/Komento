@@ -2,7 +2,10 @@ import type { RequestHandler } from '@sveltejs/kit'
 
 import PrismaClient from '@lib/prisma'
 
-export const post: RequestHandler = async ({ body: reqBody }) => {
+export const post: RequestHandler<
+  unknown,
+  { userId: string; replyId: string }
+> = async ({ body: reqBody }) => {
   const client = PrismaClient.instance
   let status = 500
   let body = {}
