@@ -2,7 +2,10 @@ import type { RequestHandler } from '@sveltejs/kit'
 
 import PrismaClient from '@lib/prisma'
 
-export const post: RequestHandler = async ({ body: reqBody }) => {
+export const post: RequestHandler<
+  unknown,
+  { id: string; content: string }
+> = async ({ body: reqBody }) => {
   const client = PrismaClient.instance
   let status = 500
   let body = {}
@@ -75,7 +78,10 @@ export const del: RequestHandler = async ({ query }) => {
   return { status, body }
 }
 
-export const patch: RequestHandler = async ({ body: reqBody }) => {
+export const patch: RequestHandler<
+  unknown,
+  { id: string; content: string }
+> = async ({ body: reqBody }) => {
   const client = PrismaClient.instance
   let status = 500
   let body = {}
