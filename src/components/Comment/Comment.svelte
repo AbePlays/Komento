@@ -2,6 +2,7 @@
   import { afterUpdate } from 'svelte'
   import { scale, slide } from 'svelte/transition'
   import { useQueryClient } from '@sveltestack/svelte-query'
+  import { addToast } from 'as-toast'
   import Button from '@components/Button.svelte'
   import Card from '@components/Card.svelte'
   import CommentInput from './CommentInput.svelte'
@@ -36,10 +37,17 @@
     fetch(`/api/comment?id=${data.id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' }
-    }).finally(() => {
-      showModal = false
-      queryClient.invalidateQueries('userdata')
     })
+      .then(() => {
+        addToast('Comment deleted')
+      })
+      .catch(() => {
+        addToast('Error deleting comment', 'warn')
+      })
+      .finally(() => {
+        showModal = false
+        queryClient.invalidateQueries('userdata')
+      })
   }
 
   const submitReply = (text: string) => {
@@ -53,10 +61,17 @@
           userId: $currentUser.id,
           replyingTo: data.user.id
         })
-      }).finally(() => {
-        showReply = false
-        queryClient.invalidateQueries('userdata')
       })
+        .then(() => {
+          addToast('Reply submitted')
+        })
+        .catch(() => {
+          addToast('Error submitting reply', 'warn')
+        })
+        .finally(() => {
+          showReply = false
+          queryClient.invalidateQueries('userdata')
+        })
     }
   }
 
@@ -66,10 +81,17 @@
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: value, id: data.id })
-      }).finally(() => {
-        isEditing = false
-        queryClient.invalidateQueries('userdata')
       })
+        .then(() => {
+          addToast('Comment updated')
+        })
+        .catch(() => {
+          addToast('Error updating comment', 'warn')
+        })
+        .finally(() => {
+          isEditing = false
+          queryClient.invalidateQueries('userdata')
+        })
     }
   }
 
@@ -78,9 +100,16 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ commentId: data.id, userId: $currentUser.id })
-    }).finally(() => {
-      queryClient.invalidateQueries('userdata')
     })
+      .then(() => {
+        addToast('Upvote toggled')
+      })
+      .catch(() => {
+        addToast('Error toggling upvote', 'warn')
+      })
+      .finally(() => {
+        queryClient.invalidateQueries('userdata')
+      })
   }
 
   const downvoteHandler = () => {
@@ -88,9 +117,16 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ commentId: data.id, userId: $currentUser.id })
-    }).finally(() => {
-      queryClient.invalidateQueries('userdata')
     })
+      .then(() => {
+        addToast('Downvote toggled')
+      })
+      .catch(() => {
+        addToast('Error toggling downvote', 'warn')
+      })
+      .finally(() => {
+        queryClient.invalidateQueries('userdata')
+      })
   }
 
   const toggleEditing = () => (isEditing = !isEditing)

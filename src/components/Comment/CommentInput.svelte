@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { useQueryClient } from '@sveltestack/svelte-query'
+  import { addToast } from 'as-toast'
   import Button from '@components/Button.svelte'
   import Card from '@components/Card.svelte'
   import Input from '@components/Input.svelte'
@@ -10,6 +12,8 @@
   export let showCancel = false
   export let onCancel: () => void = () => {}
   let text = ''
+
+  const queryClient = useQueryClient()
 
   const inputHanlder = (e: Event) => {
     text = (e.target as HTMLTextAreaElement).value
@@ -23,9 +27,17 @@
         body: JSON.stringify({ content: text, id: $currentUser.id }),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST'
-      }).finally(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
       })
+        .then(() => {
+          addToast('Content added')
+        })
+        .catch(() => {
+          addToast('Error adding content', 'warn')
+        })
+        .finally(() => {
+          queryClient.invalidateQueries('userdata')
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        })
     }
     text = ''
   }
