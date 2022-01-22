@@ -1,13 +1,13 @@
 # Komento
 
-Komento is an interactive comments section. Data for this project is provided by a local `data.json` file to populate the content on the first load.
+Komento is an interactive comments section. The app is server rendered and the server cache on client-side is handled by `svelte-query` to provide optimistic updates 😇
 
 Current Implementation involves following functionality:
 
 - View the optimal layout for the app depending on their device's screen size
 - See hover states for all interactive elements on the page
 - Create, Read, Update, and Delete comments and replies
-- Upvote and downvote comments
+- Upvote and downvote content
 
 <br />
 
@@ -52,7 +52,7 @@ Current Implementation involves following functionality:
 
 - Replying to a comment adds the new reply to the bottom of the nested replies within that comment.
 - A confirmation modal should pop up before a comment or reply is deleted.
-- Adding a new comment or reply uses the `currentUser` object from within the `data.json` file.
+- Adding a new comment or reply uses the `currentUser` returned from the server on initial page load.
 - You can only edit or delete your own comments and replies.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -62,6 +62,8 @@ Current Implementation involves following functionality:
 - [Sveltekit](https://kit.svelte.dev/)
 - [Vercel](https://vercel.com)
 - [Tailwind](https://tailwindcss.com/)
+- [MongoDB Atlas](https://www.mongodb.com/atlas)
+- [Prisma](https://www.prisma.io/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

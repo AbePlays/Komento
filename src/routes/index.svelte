@@ -36,17 +36,3 @@
   <App {userData} />
 </QueryClientProvider>
 <Toasts />
-
-<style>
-  /* Toast styles */
-  :root {
-    --as-toast-border: 1px solid #e8ebee;
-    --as-toast-btn-border: none;
-    --as-toast-info-border-color: #519259;
-    --as-toast-info-background: #cee5d0;
-    --as-toast-info-color: #519259;
-    --as-toast-warn-border-color: #dd4a48;
-    --as-toast-warn-background: #ffafaf;
-    --as-toast-warn-color: #dd4a48;
-  }
-</style>
